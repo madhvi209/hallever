@@ -6,6 +6,21 @@ import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+function hasDialogTitle(children: React.ReactNode): boolean {
+  return React.Children.toArray(children).some((child) => {
+    if (!React.isValidElement(child)) return false
+
+    if (
+      child.type === DialogTitle ||
+      child.type === DialogPrimitive.Title
+    ) {
+      return true
+    }
+
+    return hasDialogTitle(child.props?.children)
+  })
+}
+
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
@@ -50,10 +65,14 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  fallbackTitle = "Dialog",
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
+  fallbackTitle?: string
 }) {
+  const hasTitle = hasDialogTitle(children)
+
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
@@ -65,6 +84,11 @@ function DialogContent({
         )}
         {...props}
       >
+        {!hasTitle && (
+          <DialogPrimitive.Title className="sr-only">
+            {fallbackTitle}
+          </DialogPrimitive.Title>
+        )}
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close

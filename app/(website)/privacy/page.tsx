@@ -8,7 +8,6 @@ const COMPANY_NAME = "Hallever India Pvt. Ltd.";
 const LEGAL_ENTITY = "Hallever India Pvt. Ltd.";
 const WEBSITE_URL = "info@halleverindia.in";
 const CONTACT_EMAIL = "customercare@halleverindia.com";
-const CONTACT_PHONE = "+91-9468909306";
 const CONTACT_ADDRESS = "Near Petrol Pump, Bansur Road, Kotputli, Rajasthan 303108";
 const LAST_UPDATED = "August 26, 2025";
 
@@ -272,11 +271,6 @@ export default function PrivacyPolicyPage() {
                     <p className="m-0">
                         Email: <a className="underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
                     </p>
-                    {CONTACT_PHONE && (
-                        <p className="m-0">
-                            Phone: <a className="underline" href={`tel:${CONTACT_PHONE}`}>{CONTACT_PHONE}</a>
-                        </p>
-                    )}
                 </address>
 
                 <h2>18) Grievance Officer (India)</h2>

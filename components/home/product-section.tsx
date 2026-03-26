@@ -12,7 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/lib/redux/store";
 import { useLanguage } from "@/context/language-context";
 import { useCart } from "@/context/cart-context";
-import { Loader2, ShoppingCart, Check } from "lucide-react";
+import { useWishlist } from "@/context/wishlist-context";
+import { Loader2, ShoppingCart, Check, Heart } from "lucide-react";
 import Link from "next/link";
 import { generateSlug } from "@/lib/utils";
 
@@ -61,6 +62,7 @@ export default function ProductSection() {
     const dispatch = useDispatch<AppDispatch>();
     const { t } = useLanguage();
     const { addToCart, isInCart } = useCart();
+    const { toggleWishlist, isInWishlist } = useWishlist();
 
     const products = useSelector(selectProducts);
     const isLoading = useSelector(selectIsLoading);
@@ -212,6 +214,26 @@ export default function ProductSection() {
                                                 ))}
                                             </div>
                                         )}
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                toggleWishlist({
+                                                    id: String(product.id),
+                                                    name: product.name,
+                                                    price: product.price,
+                                                    images: product.images,
+                                                    summary: product.summary,
+                                                    category: product.category,
+                                                    subCategory: product.subCategory,
+                                                })
+                                            }
+                                            className="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow"
+                                            aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+                                        >
+                                            <Heart
+                                                className={`w-4 h-4 ${isInWishlist(product.id) ? "fill-[#E10600] text-[#E10600]" : "text-gray-600"}`}
+                                            />
+                                        </button>
                                     </div>
 
                                     <div className="p-4">

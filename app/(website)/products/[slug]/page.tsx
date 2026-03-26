@@ -10,17 +10,21 @@ import { AppDispatch } from "@/lib/redux/store";
 import { fetchProducts, selectProducts } from "@/lib/redux/slice/productSlice";
 import { findProductBySlug } from "@/lib/utils";
 import { useCart } from "@/context/cart-context";
-import { ShoppingCart, Check } from "lucide-react";
+import { useWishlist } from "@/context/wishlist-context";
+import { ShoppingCart, Check, Heart, ShieldCheck, RotateCcw, Truck } from "lucide-react";
 
 export default function ProductDetailsPage() {
     const { slug } = useParams();
     const dispatch = useDispatch<AppDispatch>();
     const products = useSelector(selectProducts);
     const { addToCart } = useCart();
+    const { toggleWishlist, isInWishlist } = useWishlist();
     const [product, setProduct] = useState<ProductItem | null>(null);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [addedToCart, setAddedToCart] = useState(false);
+    const [deliveryPin, setDeliveryPin] = useState("");
+    const [deliveryMessage, setDeliveryMessage] = useState("");
 
     // Fetch products and find the one by slug
     useEffect(() => {
@@ -77,13 +81,13 @@ export default function ProductDetailsPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
                         {/* Images Section */}
                         <div className="space-y-4">
-                            <div className="aspect-square rounded-lg overflow-hidden">
+                            <div className="aspect-square rounded-lg overflow-hidden group cursor-zoom-in">
                                 <Image
                                     src={product.images[selectedImageIndex] || "/placeholder.svg"}
                                     alt={`${product.name} - Image ${selectedImageIndex + 1}`}
                                     width={500}
                                     height={500}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                 />
                             </div>
                             <div className="grid grid-cols-4 gap-2">
@@ -150,26 +154,91 @@ export default function ProductDetailsPage() {
 
                             {/* Add to Cart Button */}
                             <div className="pt-4">
-                                <button
-                                    onClick={() => {
-                                        addToCart(product);
-                                        setAddedToCart(true);
-                                        setTimeout(() => setAddedToCart(false), 2000);
-                                    }}
-                                    className={`w-full text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 ${addedToCart ? 'bg-green-600 hover:bg-green-700' : 'bg-[#E10600] hover:bg-red-700'}`}
-                                >
-                                    {addedToCart ? (
-                                        <>
-                                            <Check className="w-5 h-5" />
-                                            Added to Cart!
-                                        </>
-                                    ) : (
-                                        <>
-                                            <ShoppingCart className="w-5 h-5" />
-                                            Add to Cart
-                                        </>
-                                    )}
-                                </button>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <button
+                                        onClick={() => {
+                                            addToCart(product);
+                                            setAddedToCart(true);
+                                            setTimeout(() => setAddedToCart(false), 2000);
+                                        }}
+                                        className={`w-full text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 ${addedToCart ? 'bg-green-600 hover:bg-green-700' : 'bg-[#E10600] hover:bg-red-700'}`}
+                                    >
+                                        {addedToCart ? (
+                                            <>
+                                                <Check className="w-5 h-5" />
+                                                Added to Cart!
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ShoppingCart className="w-5 h-5" />
+                                                Add to Cart
+                                            </>
+                                        )}
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            toggleWishlist({
+                                                id: String(product.id),
+                                                name: product.name,
+                                                price: product.price,
+                                                images: product.images,
+                                                summary: product.summary,
+                                                category: product.category,
+                                                subCategory: product.subCategory,
+                                            })
+                                        }
+                                        className="w-full border border-[#E10600] text-[#E10600] py-3 px-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 hover:bg-[#E10600] hover:text-white"
+                                    >
+                                        <Heart className={`w-5 h-5 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
+                                        {isInWishlist(product.id) ? "Wishlisted" : "Add to Wishlist"}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="pt-4 space-y-3 border-t">
+                                <h3 className="text-lg font-semibold text-gray-900">Delivery Checker</h3>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        maxLength={6}
+                                        value={deliveryPin}
+                                        onChange={(e) => setDeliveryPin(e.target.value.replace(/\D/g, ""))}
+                                        placeholder="Enter 6-digit pincode"
+                                        className="flex-1 border rounded-md px-3 py-2 text-sm"
+                                    />
+                                    <button
+                                        className="px-4 py-2 rounded-md bg-gray-900 text-white text-sm"
+                                        onClick={() => {
+                                            if (deliveryPin.length !== 6) {
+                                                setDeliveryMessage("Please enter a valid 6-digit pincode.");
+                                                return;
+                                            }
+                                            const eta = new Date();
+                                            eta.setDate(eta.getDate() + 4);
+                                            setDeliveryMessage(`Estimated delivery by ${eta.toDateString()}`);
+                                        }}
+                                    >
+                                        Check
+                                    </button>
+                                </div>
+                                {deliveryMessage && (
+                                    <p className="text-sm text-gray-600">{deliveryMessage}</p>
+                                )}
+                            </div>
+
+                            <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div className="border rounded-lg p-3 flex items-start gap-2">
+                                    <ShieldCheck className="w-4 h-4 mt-0.5 text-green-600" />
+                                    <p className="text-xs text-gray-700">Secure payment guaranteed</p>
+                                </div>
+                                <div className="border rounded-lg p-3 flex items-start gap-2">
+                                    <RotateCcw className="w-4 h-4 mt-0.5 text-blue-600" />
+                                    <p className="text-xs text-gray-700">7-day return support</p>
+                                </div>
+                                <div className="border rounded-lg p-3 flex items-start gap-2">
+                                    <Truck className="w-4 h-4 mt-0.5 text-orange-600" />
+                                    <p className="text-xs text-gray-700">Fast delivery across India</p>
+                                </div>
                             </div>
                         </div>
                     </div>

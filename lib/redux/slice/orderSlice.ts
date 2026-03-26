@@ -27,10 +27,12 @@ export interface OrderFormData {
 // Order type including ID
 export interface Order {
     id: string;
+    userId?: string;
+    isGuest?: boolean;
     formData: OrderFormData;
     selectedProducts: SelectedProduct[];
     totalAmount: number;
-    status?: 'processing' | 'in_transit' | 'delivered' | 'cancelled' | 'pending';
+    status?: 'processing' | 'in_transit' | 'delivered' | 'cancelled' | 'pending' | 'pending_payment';
     createdAt?: string;
     updatedAt?: string;
 }

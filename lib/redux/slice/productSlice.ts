@@ -11,8 +11,8 @@ export interface ProductItem {
     wattage: string;
     images: string[];
     link?: string;
-    category?: | "Indoor" | "Outdoor" | "Tent Decoration" | "Raw Materials"| "Machinery" | "Solar Lights"| "Others";
-    subCategory?: string; 
+    category?: | "Indoor" | "Outdoor" | "Tent Decoration" | "Raw Materials" | "Machinery" | "Solar Lights" | "Others";
+    subCategory?: string;
     specifications?: {
         dimensions?: string;
         weight?: string;

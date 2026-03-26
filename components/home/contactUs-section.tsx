@@ -80,11 +80,11 @@ const ContactSection = () => {
 
     const handleRedirect = (type: "phone" | "whatsapp" | "email") => {
         if (type === "whatsapp") {
-            window.open("https://wa.me/919468909306", "_blank");
+            window.open("mailto:customercare@halleverindia.com", "_blank");
         } else if (type === "email") {
             window.open("mailto:customercare@halleverindia.com", "_blank");
         } else if (type === "phone") {
-            window.open("tel:+919468909306", "_self");
+            window.open("mailto:customercare@halleverindia.com", "_blank");
         }
     };
 

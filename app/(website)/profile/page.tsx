@@ -16,6 +16,18 @@ interface UserData {
   tlcId: string;
   role: string;
   createdOn: string;
+  addresses?: Array<{
+    id: string;
+    fullName: string;
+    phoneNumber: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    type: "home" | "office" | "other";
+    isDefault?: boolean;
+  }>;
 }
 
 const UserProfilePage = () => {
@@ -213,6 +225,39 @@ const UserProfilePage = () => {
         </div>
 
         {/* Quick Actions */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Saved Addresses</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {Array.isArray(user.addresses) && user.addresses.length > 0 ? (
+              <div className="space-y-3">
+                {user.addresses.map((addr) => (
+                  <div key={addr.id} className="rounded-md border border-gray-200 p-3 text-sm">
+                    <p className="font-semibold text-gray-900">
+                      {addr.fullName}
+                      <span className="ml-2 text-xs uppercase border rounded-full px-2 py-0.5 text-emerald-700 border-emerald-500">
+                        {addr.type}
+                      </span>
+                      {addr.isDefault && (
+                        <span className="ml-2 text-xs uppercase border rounded-full px-2 py-0.5 text-[#E10600] border-[#E10600]">
+                          Default
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-gray-700 mt-1">
+                      {addr.line1}{addr.line2 ? `, ${addr.line2}` : ""}, {addr.city}, {addr.state} - {addr.pincode}
+                    </p>
+                    <p className="text-gray-700 mt-1">Mobile: {addr.phoneNumber}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">No saved addresses yet. Add one while placing an order.</p>
+            )}
+          </CardContent>
+        </Card>
+
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>

@@ -1,17 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, Package, Star, ShoppingCart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
-import { useCart } from '@/context/cart-context';
-import { useLanguage } from '@/context/language-context';
-import Image from 'next/image';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts, selectProducts, selectError, selectIsLoading } from '@/lib/redux/slice/productSlice';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, X, Package, ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/context/cart-context";
+import { useLanguage } from "@/context/language-context";
+import Image from "next/image";
 
 interface Product {
   id: string;
@@ -21,30 +18,61 @@ interface Product {
   category: string;
   subCategory?: string;
   wattage?: string;
-  rating?: number;
-  description?: string;
 }
 
 const SearchBanner = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { addToCart, isInCart } = useCart();
   const { t } = useLanguage();
 
-  // Redux
-  const dispatch = useDispatch();
-  const allProducts = useSelector(selectProducts) as Product[];
-  const isLoading = useSelector(selectIsLoading);
-  const error = useSelector(selectError);
+  const debouncedQuery = useMemo(() => searchQuery.trim(), [searchQuery]);
 
-  // Fetch all products on component mount (redux)
   useEffect(() => {
-    dispatch(fetchProducts() as any);
-  }, [dispatch]);
+    if (!debouncedQuery) {
+      setSearchResults([]);
+      setIsSearching(false);
+      setError(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        setIsSearching(true);
+        setError(null);
+        const res = await fetch(
+          `/api/routes/products/search?q=${encodeURIComponent(
+            debouncedQuery
+          )}&limit=8`,
+          { signal: controller.signal }
+        );
+        const json = await res.json();
+        if (!res.ok) {
+          throw new Error(json.errorMessage || "Failed to search");
+        }
+        setSearchResults((json.data || []) as Product[]);
+        setShowResults(true);
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          setError(t("search.error"));
+          setSearchResults([]);
+        }
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [debouncedQuery, t]);
 
   // Close search results when clicking outside
   useEffect(() => {
@@ -54,40 +82,14 @@ const SearchBanner = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-
-    if (query.trim().length === 0) {
-      setSearchResults([]);
-      setShowResults(false);
-      return;
-    }
-
-    setIsSearching(true);
-
-    // Simulate API delay for better UX
-    setTimeout(() => {
-      const filtered = (allProducts || []).filter(product =>
-        product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.category.toLowerCase().includes(query.toLowerCase()) ||
-        (product.subCategory && product.subCategory.toLowerCase().includes(query.toLowerCase())) ||
-        (product.description && product.description.toLowerCase().includes(query.toLowerCase()))
-      );
-
-      setSearchResults(filtered.slice(0, 8)); // Limit to 8 results
-      setShowResults(true);
-      setIsSearching(false);
-    }, 300);
-  };
-
   const handleProductClick = (product: Product) => {
-    router.push(`/products/${product.name.toLowerCase().replace(/\s+/g, '-')}`);
+    router.push(`/products/${product.name.toLowerCase().replace(/\s+/g, "-")}`);
     setShowResults(false);
-    setSearchQuery('');
+    setSearchQuery("");
   };
 
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
@@ -96,8 +98,14 @@ const SearchBanner = () => {
   };
 
   const clearSearch = () => {
-    setSearchQuery('');
+    setSearchQuery("");
     setSearchResults([]);
+    setShowResults(false);
+  };
+
+  const openSearchPage = () => {
+    if (!searchQuery.trim()) return;
+    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     setShowResults(false);
   };
 
@@ -110,7 +118,10 @@ const SearchBanner = () => {
           type="text"
           placeholder={t("search.placeholder") || "Search products..."}
           value={searchQuery}
-          onChange={(e) => handleSearch(e.target.value)}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") openSearchPage();
+          }}
           className="pl-10 pr-10 w-full"
           onFocus={() => {
             if (searchQuery.trim().length > 0) {
@@ -130,7 +141,7 @@ const SearchBanner = () => {
 
       {/* Search Results Dropdown */}
       <AnimatePresence>
-        {showResults && (searchResults.length > 0 || isSearching || isLoading) && (
+        {showResults && (searchResults.length > 0 || isSearching || !!error) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -138,7 +149,7 @@ const SearchBanner = () => {
             transition={{ duration: 0.2 }}
             className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
           >
-                         {(isSearching || isLoading) ? (
+            {isSearching ? (
                <div className="p-4 text-center text-gray-500">
                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#E10600] mx-auto mb-2"></div>
                  {t("search.loading")}
@@ -187,12 +198,6 @@ const SearchBanner = () => {
                         <span className="text-sm font-semibold text-[#E10600]">
                           ₹{product.price}
                         </span>
-                        {product.rating && (
-                          <div className="flex items-center space-x-1">
-                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                            <span className="text-xs text-gray-500">{product.rating}</span>
-                          </div>
-                        )}
                       </div>
                     </div>
 
@@ -202,8 +207,8 @@ const SearchBanner = () => {
                       variant="ghost"
                       className={`p-2 rounded-full ${
                         isInCart(product.id) 
-                          ? 'text-green-600 hover:text-green-700' 
-                          : 'text-gray-400 hover:text-[#E10600]'
+                          ? "text-green-600 hover:text-green-700"
+                          : "text-gray-400 hover:text-[#E10600]"
                       }`}
                       onClick={(e) => handleAddToCart(e, product)}
                       disabled={isInCart(product.id)}
@@ -223,13 +228,9 @@ const SearchBanner = () => {
                     <Button
                       variant="outline"
                       className="w-full text-sm"
-                      onClick={() => {
-                        router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
-                        setShowResults(false);
-                        setSearchQuery('');
-                      }}
+                      onClick={openSearchPage}
                     >
-                                             {t("search.viewAll").replace("{count}", searchResults.length.toString())}
+                      {t("search.viewAll").replace("{count}", searchResults.length.toString())}
                     </Button>
                   </div>
                 )}

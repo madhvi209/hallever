@@ -42,7 +42,7 @@ const SignupForm = () => {
         if (formattedPhone && !e164Regex.test(formattedPhone)) {
             setAlert({
                 type: "error",
-                message: "Please enter a valid phone number with country code (e.g. +919876543210).",
+                message: "Please enter a valid phone number with country code.",
             });
             setLoading(false);
             return;

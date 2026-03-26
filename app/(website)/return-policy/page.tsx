@@ -7,7 +7,6 @@ const COMPANY_NAME = "Hallever India Pvt. Ltd.";
 const LEGAL_ENTITY = "Hallever India Pvt. Ltd.";
 const WEBSITE_URL = "info@halleverindia.in";
 const CONTACT_EMAIL = "customercare@halleverindia.com";
-const CONTACT_PHONE = "+91-9468909306";
 const CONTACT_ADDRESS = "Near Petrol Pump, Bansur Road, Kotputli, Rajasthan 303108";
 const LAST_UPDATED = "August 26, 2025";
 
@@ -110,9 +109,6 @@ export default function ReturnRefundPolicyPage() {
                     <li>
                         <span role="img" aria-label="email">📧</span> Email: <a className="underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
                     </li>
-                    <li>
-                        <span role="img" aria-label="phone">📞</span> Phone: <a className="underline" href={`tel:${CONTACT_PHONE}`}>{CONTACT_PHONE}</a>
-                    </li>
                     <li>Provide:
                         <ul>
                             <li>Order details (Order ID, Invoice)</li>
@@ -171,11 +167,6 @@ export default function ReturnRefundPolicyPage() {
                     <p className="m-0">
                         <span role="img" aria-label="email">📧</span> Email: <a className="underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
                     </p>
-                    {CONTACT_PHONE && (
-                        <p className="m-0">
-                            <span role="img" aria-label="phone">📞</span> Phone: <a className="underline" href={`tel:${CONTACT_PHONE}`}>{CONTACT_PHONE}</a>
-                        </p>
-                    )}
                     <p className="m-0">Business Hours: [Mon-Sat, 9 AM – 6 PM IST]</p>
                 </address>
 

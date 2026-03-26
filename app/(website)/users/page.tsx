@@ -35,6 +35,19 @@ interface UserData {
   tlcId: string;
   role: string;
   createdOn: string;
+  addresses?: Array<{
+    id: string;
+    fullName: string;
+    phoneNumber: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
+    type: "home" | "office" | "other";
+    isDefault?: boolean;
+  }>;
 }
 
 interface OrderData {
@@ -433,6 +446,36 @@ const UsersPage = () => {
                       <Calendar className="w-4 h-4 text-gray-500" />
                       <span className="text-gray-700">Joined {new Date(user.createdOn).toLocaleDateString()}</span>
                     </div>
+                  </div>
+
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h4 className="font-semibold text-gray-900 mb-3">Saved Addresses</h4>
+                    {Array.isArray(user.addresses) && user.addresses.length > 0 ? (
+                      <div className="space-y-2">
+                        {user.addresses.slice(0, 3).map((addr) => (
+                          <div key={addr.id} className="rounded-md border border-gray-200 p-3 text-xs">
+                            <p className="font-semibold text-gray-900">
+                              {addr.fullName}
+                              <span className="ml-2 text-[10px] uppercase border rounded-full px-2 py-0.5 text-emerald-700 border-emerald-500">
+                                {addr.type}
+                              </span>
+                              {addr.isDefault && (
+                                <span className="ml-2 text-[10px] uppercase border rounded-full px-2 py-0.5 text-[#E10600] border-[#E10600]">
+                                  Default
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-gray-700 mt-1">
+                              {addr.line1}{addr.line2 ? `, ${addr.line2}` : ""}, {addr.city}, {addr.state} - {addr.pincode}
+                            </p>
+                            <p className="text-gray-700 mt-1">Mobile: {addr.phoneNumber}</p>
+                          </div>
+                        ))}
+                        <p className="text-[11px] text-gray-500">You can add/select addresses during checkout.</p>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500">No saved addresses yet. Add one during checkout.</p>
+                    )}
                   </div>
 
                   {/* Stats */}

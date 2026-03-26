@@ -4,9 +4,10 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { Menu, User, LogIn, UserPlus, Globe, X, ShoppingCart, LogOut, LayoutDashboard } from "lucide-react"
+import { Menu, User, LogIn, UserPlus, Globe, X, ShoppingCart, LogOut, LayoutDashboard, Heart } from "lucide-react"
 import { Language, useLanguage } from "@/context/language-context"
 import { useCart } from "@/context/cart-context"
+import { useWishlist } from "@/context/wishlist-context"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +25,7 @@ export default function Header() {
   const [user, setUser] = useState<any>(null)
   const { t, language, setLanguage } = useLanguage()
   const { totalItems } = useCart()
+  const { totalWishlistItems } = useWishlist()
   const router = useRouter()
   const pathname = usePathname()
 
@@ -169,6 +171,16 @@ export default function Header() {
           </nav>
 
           <div className="hidden sm:flex items-center space-x-3 ml-4">
+            <Link href="/wishlist">
+              <Button variant="ghost" size="icon" className="w-10 h-10 p-2 hover:bg-accent relative">
+                <Heart className="h-5 w-5" />
+                {totalWishlistItems > 0 && (
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-2 -right-2 bg-[#E10600] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                    {totalWishlistItems > 99 ? '99+' : totalWishlistItems}
+                  </motion.div>
+                )}
+              </Button>
+            </Link>
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="w-10 h-10 p-2 hover:bg-accent relative">
                 <ShoppingCart className="h-5 w-5" />
@@ -252,6 +264,17 @@ export default function Header() {
             </div>
 
             <div className="px-4 mt-2">
+              <Link href="/wishlist" onClick={() => setMenuOpen(false)}>
+                <Button variant="outline" className="w-full flex items-center justify-center gap-2 mb-2">
+                  <Heart className="h-5 w-5" />
+                  Wishlist
+                  {totalWishlistItems > 0 && (
+                    <span className="bg-[#E10600] text-white text-xs rounded-full px-2 py-1 font-bold">
+                      {totalWishlistItems > 99 ? '99+' : totalWishlistItems}
+                    </span>
+                  )}
+                </Button>
+              </Link>
               <Link href="/cart" onClick={() => setMenuOpen(false)}>
                 <Button variant="outline" className="w-full flex items-center justify-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
