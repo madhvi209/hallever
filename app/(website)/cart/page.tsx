@@ -1117,30 +1117,6 @@ const CartPage = () => {
                       {isPaying ? "Processing..." : "PLACE ORDER"}
                     </Button>
 
-                    {checkoutStep === 2 && (
-                      <div className="space-y-2 mb-4">
-                        <button onClick={() => setShippingMethod("standard")} className={`w-full border rounded-md p-3 text-left ${shippingMethod === "standard" ? "border-[#E10600] bg-red-50" : ""}`}>
-                          Standard Shipping (3-5 days) - Free
-                        </button>
-                        <button onClick={() => setShippingMethod("express")} className={`w-full border rounded-md p-3 text-left ${shippingMethod === "express" ? "border-[#E10600] bg-red-50" : ""}`}>
-                          Express Shipping (1-2 days) - ₹149
-                        </button>
-                      </div>
-                    )}
-
-                    {checkoutStep === 3 && (
-                      <div className="space-y-2 mb-4 text-sm text-gray-700">
-                        <p>
-                          <strong>Deliver to:</strong>{" "}
-                          {selectedAddress
-                            ? `${selectedAddress.fullName}, ${selectedAddress.line1}${selectedAddress.line2 ? `, ${selectedAddress.line2}` : ""}, ${selectedAddress.city}, ${selectedAddress.state} - ${selectedAddress.pincode}`
-                            : "No address selected"}
-                        </p>
-                        <p><strong>Shipping:</strong> {shippingMethod === "express" ? "Express (₹149)" : "Standard (Free)"}</p>
-                        <p><strong>Amount:</strong> ₹{totalAmount + (shippingMethod === "express" ? 149 : 0)}</p>
-                      </div>
-                    )}
-
                     {checkoutStep === 4 && (
                       <div className="space-y-2 mb-4 text-sm text-gray-700">
                         <p>Pay securely with Razorpay (UPI, Cards, Netbanking, Wallets).</p>
