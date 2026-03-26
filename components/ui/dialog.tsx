@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 function hasDialogTitle(children: React.ReactNode): boolean {
   return React.Children.toArray(children).some((child) => {
-    if (!React.isValidElement(child)) return false
+    if (!React.isValidElement<{ children?: React.ReactNode }>(child)) return false
 
     if (
       child.type === DialogTitle ||
@@ -17,7 +17,7 @@ function hasDialogTitle(children: React.ReactNode): boolean {
       return true
     }
 
-    return hasDialogTitle(child.props?.children)
+    return hasDialogTitle(child.props.children)
   })
 }
 
