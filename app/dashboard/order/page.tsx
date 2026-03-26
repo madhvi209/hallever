@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash, Plus, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 // --- Loader selector (add this if not already in your slice) ---
 import { useSelector as useReduxSelector } from "react-redux";
@@ -181,7 +182,7 @@ const OrdersPage = () => {
           <div className="font-semibold text-xs text-gray-500">Selected Products:</div>
           {products.map((prod) => (
             <div key={prod.id} className="flex items-center gap-2 border rounded p-2 bg-gray-50">
-              <img src={prod.image} alt={prod.name} className="w-10 h-10 object-cover rounded" />
+              <Image src={prod.image} alt={prod.name} width={40} height={40} className="w-10 h-10 object-cover rounded" />
               <div className="flex-1">
                 <div className="font-medium text-sm">{prod.name}</div>
                 <div className="text-xs text-gray-500">
@@ -391,9 +392,11 @@ const OrdersPage = () => {
                   key={prod.id}
                   className="flex items-center gap-2 border rounded p-2 mb-2 bg-gray-50"
                 >
-                  <img
+                  <Image
                     src={prod.image}
                     alt={prod.name}
+                    width={32}
+                    height={32}
                     className="w-8 h-8 object-cover rounded"
                   />
                   <div className="flex-1">

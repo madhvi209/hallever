@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import {
   Mail,
   Phone,
@@ -646,9 +647,11 @@ const UsersPage = () => {
                 <div className="space-y-3">
                   {selectedOrder.selectedProducts.map((product, index) => (
                     <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                      <img
+                      <Image
                         src={product.image || "/images/logo.png"}
                         alt={product.name}
+                        width={48}
+                        height={48}
                         className="w-12 h-12 object-cover rounded"
                       />
                       <div className="flex-1">

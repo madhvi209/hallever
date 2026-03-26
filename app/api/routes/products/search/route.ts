@@ -116,7 +116,7 @@ export async function GET(req: NextRequest) {
     const queryTokens = tokenize(q);
     const allProducts = await ProductService.getAllProducts();
 
-    let filtered = allProducts.filter((product) => {
+    const filtered = allProducts.filter((product) => {
       if (
         category &&
         (product.category || "").toLowerCase() !== category.toLowerCase()

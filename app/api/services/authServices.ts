@@ -72,7 +72,7 @@ class AuthService {
     }
 
     //  Login
-    static async loginUser(email: string, password: string) {
+    static async loginUser(email: string, _password: string) {
         try {
             const userRecord = await auth.getUserByEmail(email);
             if (!userRecord) throw new Error("User not found");

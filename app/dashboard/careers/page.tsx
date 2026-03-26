@@ -31,7 +31,6 @@ export default function CareersPage() {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     const [deleteJobItem, setDeleteJobItem] = useState<Job | null>(null);
     const [deleting, setDeleting] = useState<string | null>(null); // store job id if deleting
-    const [saving, setSaving] = useState(false); // loader for add/update
     const [updatingJobId, setUpdatingJobId] = useState<string | null>(null); // loader for update job
 
     const careers = useSelector((state: RootState) => state.careers.careers);
@@ -66,20 +65,15 @@ export default function CareersPage() {
 
     // Add loader to add/update
     const handleSave = async (data: Job) => {
-        setSaving(true);
-        try {
-            if (selectedJob) {
-                setUpdatingJobId(selectedJob.id!);
-                await dispatch(updateCareer({ ...data, id: selectedJob.id }));
-                setUpdatingJobId(null);
-            } else {
-                await dispatch(createCareer(data));
-            }
-            setIsModalOpen(false);
-            setSelectedJob(null);
-        } finally {
-            setSaving(false);
+        if (selectedJob) {
+            setUpdatingJobId(selectedJob.id!);
+            await dispatch(updateCareer({ ...data, id: selectedJob.id }));
+            setUpdatingJobId(null);
+        } else {
+            await dispatch(createCareer(data));
         }
+        setIsModalOpen(false);
+        setSelectedJob(null);
     };
 
     const handleDelete = async () => {
