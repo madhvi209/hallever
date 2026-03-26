@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/lib/redux/store';
 import { fetchProducts } from '@/lib/redux/slice/productSlice';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/cart-context';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -894,9 +895,11 @@ const CartPage = () => {
                           transition={{ duration: 0.4, delay: index * 0.1 }}
                           className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                         >
-                          <img
-                            src={item.image}
+                          <Image
+                            src={item.image || '/images/products/hero.png'}
                             alt={item.name}
+                            width={80}
+                            height={80}
                             className="w-20 h-20 object-cover rounded-lg"
                           />
 
@@ -1192,9 +1195,11 @@ const CartPage = () => {
                     <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group">
                       <CardContent className="p-4">
                         <div className="relative mb-4">
-                          <img
+                          <Image
                             src={Array.isArray(product.images) ? product.images[0] || '/images/products/hero.png' : product.images || '/images/products/hero.png'}
                             alt={product.name}
+                            width={600}
+                            height={384}
                             className="w-full h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                           />
                           <Button

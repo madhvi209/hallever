@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { Calendar, MapPin, Award, Heart, Lightbulb } from "lucide-react";

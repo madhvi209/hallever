@@ -61,7 +61,7 @@ const subCategories: Record<string, string[]> = {
 export default function ProductSection() {
     const dispatch = useDispatch<AppDispatch>();
     const { t } = useLanguage();
-    const { addToCart, isInCart } = useCart();
+    const { addToCart } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
 
     const products = useSelector(selectProducts);

@@ -128,7 +128,7 @@ export const fetchProductById = (
 // ✅ Add product
 export const addProduct = (formData: FormData) => async (dispatch: Dispatch) => {
     try {
-        const res = await axios.post("/api/routes/products", formData, {
+        await axios.post("/api/routes/products", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -144,7 +144,7 @@ export const addProduct = (formData: FormData) => async (dispatch: Dispatch) => 
 // ✅ Update product
 export const updateProduct = (formData: FormData, id: string) => async (dispatch: Dispatch) => {
     try {
-        const res = await axios.put(`/api/routes/products/${id}`, formData, {
+        await axios.put(`/api/routes/products/${id}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
